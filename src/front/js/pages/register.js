@@ -14,14 +14,13 @@ export const Register = () => {
         body: JSON.stringify({ email, password })
       });
 
+      const data = await resp.json();
+
       if (!resp.ok) {
-        throw Error("There was a problem in the registration request");
+        throw new Error(data.msg || "There was a problem in the registration request");
       }
 
-      const data = await resp.json();
-      localStorage.setItem("jwt-token", data.token);
-      // Aquí puedes guardar el usuario en la store utilizando la función setItem
-      // O realizar otras acciones necesarias después del registro exitoso
+      // Aquí puedes redirigir a la página de inicio de sesión o realizar otras acciones necesarias después del registro exitoso
     } catch (error) {
       setError(error.message);
     }
@@ -30,10 +29,12 @@ export const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
+
     await register(email, password);
   };
 
@@ -81,5 +82,6 @@ export const Register = () => {
     </div>
   );
 };
+
 
 

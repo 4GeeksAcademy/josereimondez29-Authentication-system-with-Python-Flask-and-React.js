@@ -14,17 +14,12 @@ export const Login = () => {
         body: JSON.stringify({ email, password })
       });
 
-      if (!resp.ok) {
-        throw Error("There was a problem in the login request");
-      }
-
-      if (resp.status === 401) {
-        throw Error("Invalid credentials");
-      } else if (resp.status === 400) {
-        throw Error("Invalid email or password format");
-      }
-
       const data = await resp.json();
+
+      if (!resp.ok) {
+        throw new Error(data.msg || "There was a problem in the login request");
+      }
+
       localStorage.setItem("jwt-token", data.token);
       // Llama a getMyTasks después del inicio de sesión exitoso
       await getMyTasks(); 
@@ -46,7 +41,7 @@ export const Login = () => {
       const token = localStorage.getItem('jwt-token');
 
       if (!token) {
-        throw Error("Missing token");
+        throw new Error("Missing token");
       }
 
       const resp = await fetch(`https://improved-waddle-qw4wjwv5xr5hxpr7-3001.app.github.dev/api/protected`, {
@@ -58,10 +53,11 @@ export const Login = () => {
       });
 
       if (!resp.ok) {
+        const data = await resp.json();
         if (resp.status === 403) {
-          throw Error("Invalid token");
+          throw new Error(data.msg || "Invalid token");
         } else {
-          throw Error("Server error");
+          throw new Error(data.msg || "Server error");
         }
       }
 
