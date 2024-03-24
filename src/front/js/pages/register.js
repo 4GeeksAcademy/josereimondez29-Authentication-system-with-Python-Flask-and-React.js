@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState(null);
+  const [showPopup, setShowPopup] = useState(false); // Estado para controlar la visibilidad del popup
+  const navigate = useNavigate();
 
   const register = async (email, password) => {
     try {
@@ -13,20 +16,22 @@ export const Register = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
       });
-
-      const data = await resp.json();
-
       if (!resp.ok) {
-        throw new Error(data.msg || "There was a problem in the registration request");
+        throw new Error("There was a problem in the registration request");
       }
-
-      // Aquí puedes redirigir a la página de inicio de sesión o realizar otras acciones necesarias después del registro exitoso
+      const data = await resp.json();
+      // Mostrar el popup
+      setShowPopup(true);
+      // Redirigir al usuario a la página de inicio de sesión después de 3 segundos
+      setTimeout(() => {
+        navigate('/login');
+      }, 3000);
     } catch (error) {
       setError(error.message);
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError(null);
 
@@ -35,7 +40,7 @@ export const Register = () => {
       return;
     }
 
-    await register(email, password);
+    register(email, password);
   };
 
   return (
@@ -79,9 +84,16 @@ export const Register = () => {
           </form>
         </div>
       </div>
+      {/* Mostrar el popup si showPopup es true */}
+      {showPopup && (
+        <div className="popup">
+          <p>¡Registro exitoso! Ahora puedes iniciar sesión.</p>
+        </div>
+      )}
     </div>
   );
 };
+
 
 
 

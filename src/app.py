@@ -14,6 +14,7 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS, cross_origin
 
 
 # from models import Person
@@ -22,6 +23,7 @@ ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../public/')
 app = Flask(__name__)
+CORS(app)
 app.url_map.strict_slashes = False
 
 # Setup the Flask-JWT-Extended extension
@@ -82,6 +84,7 @@ def serve_any_other_file(path):
 
 
 @app.route("/api/login", methods=["POST"])
+
 def create_login():
     body = request.get_json (silent = True)
     
@@ -109,6 +112,7 @@ def create_login():
 
  
 @app.route("/api/register", methods=["POST"])
+
 def register_user():
     body = request.get_json (silent = True)
     
